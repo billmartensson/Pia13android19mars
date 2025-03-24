@@ -10,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,9 +21,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(mathviewmodel : MathViewModel = viewModel()) {
 
     var registerName by remember { mutableStateOf("") }
     var registerPersnr by remember { mutableStateOf("") }
@@ -30,18 +33,29 @@ fun RegisterScreen() {
     var registerPassword2 by remember { mutableStateOf("") }
     var registerEmail by remember { mutableStateOf("") }
 
+    val errormessage by mathviewmodel.registerErrormessage.collectAsState()
+
     var nicetextfield = Modifier.fillMaxWidth().background(Color.Green).padding(5.dp)
+
+
 
     Column(modifier = Modifier.fillMaxSize().padding(5.dp)) {
         Text("REGISTRERA")
 
-        Text(modifier = Modifier.fillMaxWidth().padding(5.dp).background(Color.Red).padding(5.dp),
-            color = Color.White,
-            text = "FEL FEL FEL"
-        )
+        if(errormessage.isNotEmpty()) {
+            errormessage.forEach {
+                Text(modifier = Modifier.fillMaxWidth().padding(5.dp).background(Color.Red).padding(5.dp),
+                    color = Color.White,
+                    text = "ETT FEL"
+                )
+            }
+
+        }
 
 
-
+        if(errormessage.contains(RegisterErrors.NAME)) {
+            Text("DENNA ÄR FEL")
+        }
         TextField(modifier = nicetextfield,
             label = { Text("Name") },
             value = registerName, onValueChange = { registerName = it })
@@ -50,6 +64,9 @@ fun RegisterScreen() {
             label = { Text("E-post") },
             value = registerEmail, onValueChange = { registerEmail = it })
 
+        if(errormessage.contains(RegisterErrors.PERSNR)) {
+            Text("DENNA ÄR FEL")
+        }
         TextField(modifier = nicetextfield,
             label = { Text("Personnummer") },
             value = registerPersnr, onValueChange = { registerPersnr = it })
@@ -63,7 +80,9 @@ fun RegisterScreen() {
             value = registerPassword2, onValueChange = { registerPassword2 = it })
 
 
-        Button(onClick = {}) {
+        Button(onClick = {
+            mathviewmodel.registeruser(registerName, registerPersnr, registerEmail, registerPassword, registerPassword2)
+        }) {
             Text("Registrera")
         }
     }
