@@ -41,4 +41,35 @@ class ExampleUnitTest {
 
     }
 
+    @Test
+    fun testregisteruser() {
+
+        var mathvm = MathViewModel()
+
+        var regtest = mathvm.validateregistervalues(name = "", persnr = "", email = "", password = "", password2 = "")
+        assertTrue(regtest.contains(RegisterErrors.NAME))
+        assertTrue(regtest.contains(RegisterErrors.EMAIL))
+        assertTrue(regtest.contains(RegisterErrors.PERSNR))
+        assertTrue(regtest.contains(RegisterErrors.PASSWORD))
+        assertTrue(regtest.contains(RegisterErrors.PASSWORD2))
+
+        regtest = mathvm.validateregistervalues(name = "ABC", persnr = "", email = "", password = "a", password2 = "b")
+        assertFalse(regtest.contains(RegisterErrors.NAME))
+        assertTrue(regtest.contains(RegisterErrors.EMAIL))
+        assertTrue(regtest.contains(RegisterErrors.PERSNR))
+        assertTrue(regtest.contains(RegisterErrors.PASSWORD))
+        assertTrue(regtest.contains(RegisterErrors.PASSWORD2))
+        assertTrue(regtest.contains(RegisterErrors.PASSWORDMATCH))
+
+        regtest = mathvm.validateregistervalues(name = "ABC", persnr = "X", email = "", password = "", password2 = "")
+        assertFalse(regtest.contains(RegisterErrors.PERSNR))
+        assertTrue(regtest.contains(RegisterErrors.PERSNRFORMAT))
+
+        regtest = mathvm.validateregistervalues(name = "ABC", persnr = "121212-1212", email = "", password = "", password2 = "")
+        assertFalse(regtest.contains(RegisterErrors.PERSNR))
+        assertFalse(regtest.contains(RegisterErrors.PERSNRFORMAT))
+
+
+    }
+
 }

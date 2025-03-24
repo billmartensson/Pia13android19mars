@@ -89,8 +89,23 @@ class MathViewModel : ViewModel() {
 
     }
 
-
+    /**
+     * Register a user
+     * @param name The name of the user
+     * @param password The password of the user, must be at least 8 characters
+     */
     fun registeruser(name : String, persnr : String, email : String, password : String, password2 : String) {
+
+        var checkerror = validateregistervalues(name, persnr, email, password, password2)
+
+        _registerErrormessage.value = checkerror
+
+        if(checkerror.size == 0) {
+            // Skicka till API/server
+        }
+    }
+
+    fun validateregistervalues(name : String, persnr : String, email : String, password : String, password2 : String) : List<RegisterErrors> {
 
         var checkerror = mutableListOf<RegisterErrors>()
 
@@ -103,10 +118,10 @@ class MathViewModel : ViewModel() {
         if(email == "") {
             checkerror.add(RegisterErrors.EMAIL)
         }
-        if(password == "") {
+        if(password.length < 8) {
             checkerror.add(RegisterErrors.PASSWORD)
         }
-        if(password2 == "") {
+        if(password2.length < 8) {
             checkerror.add(RegisterErrors.PASSWORD2)
         }
         if(password != password2) {
@@ -117,11 +132,7 @@ class MathViewModel : ViewModel() {
             checkerror.add(RegisterErrors.PERSNRFORMAT)
         }
 
-        _registerErrormessage.value = checkerror
-
-        if(checkerror.size == 0) {
-            // Skicka till API/server
-        }
+        return checkerror
     }
 
 
