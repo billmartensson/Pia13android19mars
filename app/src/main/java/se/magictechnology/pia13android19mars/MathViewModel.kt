@@ -1,12 +1,19 @@
 package se.magictechnology.pia13android19mars
 
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Very nice viewmodel.
  * Use [checkpersonnummer] to check a personnummer
 */
 class MathViewModel : ViewModel() {
+
+    private val _registerErrormessage = MutableStateFlow(listOf<RegisterErrors>())
+    val registerErrormessage = _registerErrormessage.asStateFlow()
+
 
     /**
      * Simple double number function
@@ -82,5 +89,55 @@ class MathViewModel : ViewModel() {
 
     }
 
+    /**
+     * Register a user
+     * @param name The name of the user
+     * @param password The password of the user, must be at least 8 characters
+     */
+    fun registeruser(name : String, persnr : String, email : String, password : String, password2 : String) {
 
+        var checkerror = validateregistervalues(name, persnr, email, password, password2)
+
+        _registerErrormessage.value = checkerror
+
+        if(checkerror.size == 0) {
+            // Skicka till API/server
+        }
+    }
+
+    fun validateregistervalues(name : String, persnr : String, email : String, password : String, password2 : String) : List<RegisterErrors> {
+
+        var checkerror = mutableListOf<RegisterErrors>()
+
+        if(name == "") {
+            checkerror.add(RegisterErrors.NAME)
+        }
+        if(persnr == "") {
+            checkerror.add(RegisterErrors.PERSNR)
+        }
+        if(email == "") {
+            checkerror.add(RegisterErrors.EMAIL)
+        }
+        if(password.length < 8) {
+            checkerror.add(RegisterErrors.PASSWORD)
+        }
+        if(password2.length < 8) {
+            checkerror.add(RegisterErrors.PASSWORD2)
+        }
+        if(password != password2) {
+            checkerror.add(RegisterErrors.PASSWORDMATCH)
+        }
+
+        if(checkpersonnummer(persnr) == null) {
+            checkerror.add(RegisterErrors.PERSNRFORMAT)
+        }
+
+        return checkerror
+    }
+
+
+}
+
+enum class RegisterErrors {
+    NAME, PERSNR, EMAIL, PASSWORD, PASSWORD2, PASSWORDMATCH, PERSNRFORMAT
 }
